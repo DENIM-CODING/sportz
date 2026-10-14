@@ -48,21 +48,62 @@ function handleMessage(socket, data) {
     try {
         message = JSON.parse(data.toString());
     } catch {
-        sendJson(socket, { type: 'error', message: 'Invalid JSON' });
-    }
+        sendJson(socket, {
+            type: 'error',
+            message: 'Invalid JSON',
+        });
 
-    if(message?.type === "subscribe" && Number.isInteger(message.matchId)) {
-        subscribe(message.matchId, socket);
-        socket.subscriptions.add(message.matchId);
-        sendJson(socket, { type: 'subscribed', matchId: message.matchId });
         return;
     }
 
-    if(message?.type === "unsubscribe" && Number.isInteger(message.matchId)) {
-        unsubscribe(message.matchId, socket);
-        socket.subscriptions.delete(message.matchId);
-        sendJson(socket, { type: 'unsubscribed', matchId: message.matchId });
+    const matchId = Number(message?.matchId);
+
+    if (
+        message?.type === 'subscribe' &&
+        Number.isInteger(matchId) &&
+        matchId > 0
+    ) {
+        subscribe(matchId, socket);
+        socket.subscriptions.add(matchId);
+
+        sendJson(socket, {
+            type: 'subscribed',
+            matchId,
+        });
+
+        console.log(
+            '[WebSocket] Client subscribed to match:',
+            matchId
+        );
+
+        return;
     }
+
+    if (
+        message?.type === 'unsubscribe' &&
+        Number.isInteger(matchId) &&
+        matchId > 0
+    ) {
+        unsubscribe(matchId, socket);
+        socket.subscriptions.delete(matchId);
+
+        sendJson(socket, {
+            type: 'unsubscribed',
+            matchId,
+        });
+
+        console.log(
+            '[WebSocket] Client unsubscribed from match:',
+            matchId
+        );
+
+        return;
+    }
+
+    sendJson(socket, {
+        type: 'error',
+        message: 'Invalid WebSocket message or matchId',
+    });
 }
 
 function sendJson(socket, payload) {

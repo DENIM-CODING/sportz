@@ -7,7 +7,8 @@
     "start": "node src/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:example": "node src/db-example.js"
+    "db:example": "node src/db-example.js",
+    "seed": "node src/seed/seed.js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
   "dependencies": {
     "@arcjet/inspect": "^1.5.0",
     "@arcjet/node": "^1.5.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
